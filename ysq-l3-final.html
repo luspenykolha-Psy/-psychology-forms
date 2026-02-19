@@ -901,45 +901,97 @@ function nextBlock() {
   }
 }
 
+// ── Нормативна шкала інтерпретації (з бланку YSQ-L3) ──
+const interpretationScale = {
+  ed: { HB: 8,  CB: 30, BB: 54 },
+  ab: { HB: 12, CB: 25, BB: 39 },  // до 102
+  ma: { HB: 12, CB: 25, BB: 39 },  // до 102
+  si: { HB: 8,  CB: 18, BB: 30 },
+  ds: { HB: 12, CB: 25, BB: 39 },
+  fa: { HB: 8,  CB: 18, BB: 30 },
+  di: { HB: 12, CB: 25, BB: 39 },
+  vu: { HB: 8,  CB: 18, BB: 30 },
+  eu: { HB: 8,  CB: 18, BB: 30 },
+  sb: { HB: 8,  CB: 18, BB: 30 },
+  ss: { HB: 12, CB: 25, BB: 39 },
+  ei: { HB: 8,  CB: 18, BB: 30 },
+  us: { HB: 12, CB: 25, BB: 39 },
+  et: { HB: 8,  CB: 18, BB: 30 },
+  is: { HB: 12, CB: 25, BB: 39 },
+  as: { HB: 12, CB: 25, BB: 39 },
+  np: { HB: 8,  CB: 18, BB: 30 },
+  pu: { HB: 12, CB: 25, BB: 39 },
+};
+
+function calcSchemaScore(schemaId, questions) {
+  // Враховуються тільки відповіді 4, 5, 6
+  // Сума = (кількість "4" × 4) + (кількість "5" × 5) + (кількість "6" × 6)
+  let sum = 0;
+  questions.forEach(q => {
+    const val = answers[q.n];
+    if (val >= 4) sum += val;
+  });
+  return sum;
+}
+
+function getInterpretation(schemaId, score) {
+  const scale = interpretationScale[schemaId];
+  if (score <= scale.HB) return 'Низький';
+  if (score <= scale.CB) return 'Середній';
+  if (score <= scale.BB) return 'Високий';
+  return 'Дуже високий';
+}
+
 function submitResults() {
-  // Calculate schema averages
+  // Правильний підрахунок по кожній схемі
   const schemaScores = {};
+  const schemaInterpretations = {};
   schemas.forEach(s => {
-    const vals = s.questions.map(q => answers[q.n]);
-    schemaScores[s.id] = (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(2);
+    const score = calcSchemaScore(s.id, s.questions);
+    schemaScores[s.id] = score;
+    schemaInterpretations[s.id] = getInterpretation(s.id, score);
   });
 
-  // Calculate domain averages
-  const domainScores = {};
-  ['D1','D2','D3','D4','D5'].forEach(d => {
-    const domainSchemas = schemas.filter(s => s.domain === d);
-    const allVals = domainSchemas.flatMap(s => s.questions.map(q => answers[q.n]));
-    domainScores[d] = (allVals.reduce((a,b) => a+b, 0) / allVals.length).toFixed(2);
-  });
-
-  // Top 3 schemas
+  // Топ-3 схеми за балом
   const sorted = Object.entries(schemaScores).sort((a,b) => b[1]-a[1]);
-  const top3 = sorted.slice(0,3).map(([id]) => schemas.find(s => s.id === id).name).join(', ');
+  const top3 = sorted.slice(0,3).map(([id]) => {
+    const s = schemas.find(s => s.id === id);
+    return `${s.name} (${schemaScores[id]})`;
+  }).join(', ');
+
+  // Сирі відповіді по кожному питанню
+  const rawByQuestion = {};
+  schemas.forEach(s => {
+    s.questions.forEach(q => {
+      rawByQuestion[`П${q.n}`] = answers[q.n];
+    });
+  });
 
   const payload = {
     timestamp: new Date().toISOString(),
     name: clientName,
     questionnaire: 'YSQ-L3',
-    // Schema scores
+    // Бали по 18 схемах
     ed: schemaScores.ed, ab: schemaScores.ab, ma: schemaScores.ma,
     si: schemaScores.si, ds: schemaScores.ds, fa: schemaScores.fa,
     di: schemaScores.di, vu: schemaScores.vu, eu: schemaScores.eu,
     sb: schemaScores.sb, ss: schemaScores.ss, ei: schemaScores.ei,
     us: schemaScores.us, et: schemaScores.et, is: schemaScores.is,
-    as: schemaScores.as, np: schemaScores.np,
-    // Domain scores
-    domain_D1: domainScores.D1, domain_D2: domainScores.D2,
-    domain_D3: domainScores.D3, domain_D4: domainScores.D4,
-    domain_D5: domainScores.D5,
-    // Top schemas
+    as: schemaScores.as, np: schemaScores.np, pu: schemaScores.pu,
+    // Інтерпретації
+    ed_i: schemaInterpretations.ed, ab_i: schemaInterpretations.ab,
+    ma_i: schemaInterpretations.ma, si_i: schemaInterpretations.si,
+    ds_i: schemaInterpretations.ds, fa_i: schemaInterpretations.fa,
+    di_i: schemaInterpretations.di, vu_i: schemaInterpretations.vu,
+    eu_i: schemaInterpretations.eu, sb_i: schemaInterpretations.sb,
+    ss_i: schemaInterpretations.ss, ei_i: schemaInterpretations.ei,
+    us_i: schemaInterpretations.us, et_i: schemaInterpretations.et,
+    is_i: schemaInterpretations.is, as_i: schemaInterpretations.as,
+    np_i: schemaInterpretations.np, pu_i: schemaInterpretations.pu,
+    // Топ-3
     top3_schemas: top3,
-    // Raw answers
-    raw: JSON.stringify(answers),
+    // Сирі відповіді
+    raw: JSON.stringify(rawByQuestion),
   };
 
   // Show thank you immediately
