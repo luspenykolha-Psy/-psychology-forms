@@ -465,9 +465,11 @@
   <div class="header">
     <div class="logo-line">
       <div class="logo-dot"></div>
-      <span class="logo-name">Психологічна практика</span>
+      <span class="logo-name">Психолог Ольга Луспеник</span>
       <div class="logo-dot"></div>
     </div>
+    <div style="font-size:13px;color:var(--muted);letter-spacing:0.08em;margin-bottom:10px;">КПТ · Схема-терапія · Бодинаміка</div>
+    <div style="font-size:14px;color:var(--sage-dark);margin-bottom:20px;letter-spacing:0.03em;">«Зміни починаються з маленьких кроків»</div>
     <h1>Опитувальник<br><em>стану здоров'я</em></h1>
     <p>PHQ-9 · Шкала для оцінки рівня депресії</p>
   </div>
@@ -515,7 +517,7 @@
       <div class="level" id="levelLabel"></div>
       <p id="interpretationText"></p>
     </div>
-    <p class="result-note">Ваш психолог отримає повні результати та обговорить їх з вами на наступній сесії.</p>
+    <p class="result-note">Ольга отримає повні результати та обговорить їх з вами на наступній зустрічі.</p>
   </div>
 
 </div>
@@ -619,7 +621,13 @@ function submitForm() {
 
   const total = answers.reduce((a, b) => a + b, 0);
   const interp = interpretations.find(i => total <= i.max);
-  const name = document.getElementById('clientName') ? document.getElementById('clientName').value.trim() || 'Анонімно' : 'Анонімно';
+  // Ім'я з посилання (передається психологом)
+  const urlParams = new URLSearchParams(window.location.search);
+  const clientId = urlParams.get('client') || '';
+  // Дані які вводить клієнт
+  const clientFullName = document.getElementById('clientFullName') ? document.getElementById('clientFullName').value.trim() : '';
+  const clientDOB = document.getElementById('clientDOB') ? document.getElementById('clientDOB').value.trim() : '';
+  const name = clientId || clientFullName || 'Анонімно';
 
   document.getElementById('formSection').style.display = 'none';
   const result = document.getElementById('resultScreen');
@@ -634,6 +642,8 @@ function submitForm() {
   const payload = {
     timestamp: new Date().toISOString(),
     name: name,
+    fullName: clientFullName,
+    dob: clientDOB,
     questionnaire: 'PHQ-9',
     score: total,
     level: interp.level,
