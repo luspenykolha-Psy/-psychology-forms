@@ -342,14 +342,17 @@
 
   <div class="site-header">
     <div class="dot"></div>
-    <span>Психологічна практика</span>
+    <span>Психолог Ольга Луспеник</span>
     <div class="dot"></div>
   </div>
+  <div style="text-align:center;font-size:12px;color:var(--muted);letter-spacing:0.08em;margin-top:-32px;margin-bottom:10px;">КПТ · Схема-терапія · Бодинаміка</div>
+  <div style="text-align:center;font-size:14px;color:var(--teal-dark);margin-bottom:32px;letter-spacing:0.03em;">«Зміни починаються з маленьких кроків»</div>
 
   <!-- ══ INTRO ══ -->
   <div id="introScreen">
     <h1>Опитувальник<br><em>схем Янга</em></h1>
     <p>YSQ‑L3 · 232 твердження · Шкала 1–6<br>Заповнення займає приблизно 25–35 хвилин</p>
+
 
     <div class="intro-info">
       <div class="info-box">
@@ -367,8 +370,12 @@
     </div>
 
     <div class="name-input-wrap">
-      <label>Ваше ім'я (або ініціали)</label>
-      <input class="name-input" id="clientName" type="text" placeholder="Наприклад: Марія К." maxlength="60">
+      <label>Ваше повне ім'я та прізвище</label>
+      <input class="name-input" id="clientFullName" type="text" placeholder="Наприклад: Марія Коваленко" maxlength="100">
+    </div>
+    <div class="name-input-wrap">
+      <label>Дата народження</label>
+      <input class="name-input" id="clientDOB" type="text" placeholder="Наприклад: 15.03.1990" maxlength="20">
     </div>
 
     <button class="btn-start" onclick="startQuiz()">
@@ -391,7 +398,7 @@
     </div>
 
     <div class="instruction-banner">
-      Нижче наводяться твердження. Прочитайте кожне і оцініть, наскільки добре воно описує Вас. Оберіть відповідь від <strong>1</strong> (абсолютно не відповідає мені) до <strong>6</strong> (досконало описує мене).
+      Нижче наводяться твердження, які Ви можете використати для опису себе. Будь ласка, прочитайте кожне твердження і оцініть, наскільки добре воно описує Вас. Якщо Ви невпевнені щодо найкращого варіанту відповіді, то нехай Ваша відповідь буде ближча до того, що Ви емоційно, аніж раціонально, відчуваєте є більш правдивим.
     </div>
 
     <div class="schema-card">
@@ -796,7 +803,10 @@ let currentBlock = 0;
 let answers = {}; // { questionNumber: score }
 
 function startQuiz() {
-  clientName = document.getElementById('clientName').value.trim() || 'Анонімно';
+  const urlParams = new URLSearchParams(window.location.search);
+  const clientId = urlParams.get('client') || '';
+  const clientFullName = document.getElementById('clientFullName') ? document.getElementById('clientFullName').value.trim() : '';
+  clientName = clientId || clientFullName || 'Анонімно';
   document.getElementById('introScreen').classList.add('hidden');
   document.getElementById('quizScreen').classList.remove('hidden');
   renderBlock(0);
@@ -967,9 +977,14 @@ function submitResults() {
     });
   });
 
+  const clientFullNameVal = document.getElementById('clientFullName') ? document.getElementById('clientFullName').value.trim() : '';
+  const clientDOBVal = document.getElementById('clientDOB') ? document.getElementById('clientDOB').value.trim() : '';
+
   const payload = {
     timestamp: new Date().toISOString(),
     name: clientName,
+    fullName: clientFullNameVal,
+    dob: clientDOBVal,
     questionnaire: 'YSQ-L3',
     // Бали по 18 схемах
     ed: schemaScores.ed, ab: schemaScores.ab, ma: schemaScores.ma,
