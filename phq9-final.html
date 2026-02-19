@@ -497,7 +497,17 @@
 
     <!-- Submit -->
     <div class="submit-wrap">
-      <input id="clientName" type="text" placeholder="Ваше ім'я або ініціали" maxlength="60" style="width:100%;padding:14px 20px;border:1.5px solid var(--sage-light);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;background:white;color:var(--charcoal);outline:none;margin-bottom:16px;box-sizing:border-box;">
+      <div style="background:white;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 16px rgba(0,0,0,0.05);">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Будь ласка, заповніть перед відправкою:</p>
+        <input id="clientFullName" type="text" placeholder="Ваше ім'я та прізвище" maxlength="100"
+          style="width:100%;padding:14px 20px;border:1.5px solid var(--sage-light);border-radius:12px;
+          font-family:'DM Sans',sans-serif;font-size:15px;background:var(--cream);color:var(--charcoal);
+          outline:none;margin-bottom:12px;box-sizing:border-box;">
+        <input id="clientDOB" type="text" placeholder="Дата народження (наприклад: 15.03.1990)" maxlength="20"
+          style="width:100%;padding:14px 20px;border:1.5px solid var(--sage-light);border-radius:12px;
+          font-family:'DM Sans',sans-serif;font-size:15px;background:var(--cream);color:var(--charcoal);
+          outline:none;box-sizing:border-box;">
+      </div>
       <button class="submit-btn" id="submitBtn" disabled onclick="submitForm()">
         <span>Надіслати результати</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
