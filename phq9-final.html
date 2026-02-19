@@ -659,12 +659,26 @@ function submitForm() {
     level: interp.level,
     answers: answers,
   };
-  // Відправка через URL параметри (обходить CSP обмеження GitHub Pages)
-  const params = new URLSearchParams({
-    data: JSON.stringify(payload)
-  });
-  const img = new Image();
-  img.src = SHEET_URL + '?' + params.toString();
+  // Відправка через приховану форму (працює з будь-якою CSP)
+  const iframe = document.createElement('iframe');
+  iframe.name = 'hidden_iframe';
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = SHEET_URL;
+  form.target = 'hidden_iframe';
+  form.style.display = 'none';
+
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'data';
+  input.value = JSON.stringify(payload);
+  form.appendChild(input);
+
+  document.body.appendChild(form);
+  form.submit();
 }
 
 buildQuestions();

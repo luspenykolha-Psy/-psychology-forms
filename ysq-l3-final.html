@@ -1014,17 +1014,26 @@ function submitResults() {
   document.getElementById('thankScreen').style.display = 'block';
   document.getElementById('progressFill').style.width = '100%';
 
-  // Send to Google Sheets
-  if (SHEET_URL !== 'https://script.google.com/macros/s/AKfycbxTaoht8OxwOxxVkfiLGPTiWT36UhWLDqFGCi634STP3uhtMieEg_rSgyc7gNQ3jgdmsQ/exec') {
-    fetch(SHEET_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    }).catch(err => console.error('Send error:', err));
-  } else {
-    console.log('Results (dev mode):', payload);
-  }
+  // Відправка через приховану форму (працює з будь-якою CSP)
+  const iframe = document.createElement('iframe');
+  iframe.name = 'hidden_iframe';
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = SHEET_URL;
+  form.target = 'hidden_iframe';
+  form.style.display = 'none';
+
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'data';
+  input.value = JSON.stringify(payload);
+  form.appendChild(input);
+
+  document.body.appendChild(form);
+  form.submit();
 }
 </script>
 </body>
