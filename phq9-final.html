@@ -649,12 +649,12 @@ function submitForm() {
     level: interp.level,
     answers: answers,
   };
-  fetch(SHEET_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  }).catch(err => console.error('Send error:', err));
+  // Відправка через URL параметри (обходить CSP обмеження GitHub Pages)
+  const params = new URLSearchParams({
+    data: JSON.stringify(payload)
+  });
+  const img = new Image();
+  img.src = SHEET_URL + '?' + params.toString();
 }
 
 buildQuestions();
