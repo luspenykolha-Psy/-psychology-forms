@@ -246,13 +246,13 @@
     document.getElementById('quizScreen').classList.add('hidden');
     document.getElementById('thankYouScreen').classList.remove('hidden');
 
-    // Надсилаємо через no-cors fetch
-    const jsonStr = JSON.stringify(payload);
+    // Надсилаємо дані
+    const url  = FORM_CONFIG.scriptUrl + '?data=' + encodeURIComponent(JSON.stringify(payload));
+    const img  = new Image();
+    img.src    = url;
 
-    fetch(FORM_CONFIG.scriptUrl + '?data=' + encodeURIComponent(jsonStr), {
-      method: 'GET',
-      mode:   'no-cors',
-    }).catch(function() {});
+    // Резервний варіант — fetch
+    fetch(url).catch(function () {});
   }
 
   // ════════════════════════════════════════════════════════
@@ -305,7 +305,7 @@
           card.classList.remove('missed');
           void card.offsetWidth; // reflow для повторної анімації
           card.classList.add('missed');
-          setTimeout(function() { card.classList.remove('missed'); }, 2500);
+          setTimeout(() => card.classList.remove('missed'), 2500);
         });
         const first = document.getElementById(`qcard-${missed[0].n}`);
         if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
