@@ -246,13 +246,19 @@
     document.getElementById('quizScreen').classList.add('hidden');
     document.getElementById('thankYouScreen').classList.remove('hidden');
 
-    // Надсилаємо дані
-    const url  = FORM_CONFIG.scriptUrl + '?data=' + encodeURIComponent(JSON.stringify(payload));
-    const img  = new Image();
-    img.src    = url;
+    // Надсилаємо дані через POST (GET обрізає довгі URL)
+    const jsonStr = JSON.stringify(payload);
 
-    // Резервний варіант — fetch
-    fetch(url).catch(function () {});
+    // Спосіб 1 — fetch POST
+    fetch(FORM_CONFIG.scriptUrl, {
+      method:  'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body:    jsonStr,
+    }).catch(function() {
+      // Спосіб 2 — GET через img (резервний для коротких даних)
+      const img = new Image();
+      img.src = FORM_CONFIG.scriptUrl + '?data=' + encodeURIComponent(jsonStr);
+    });
   }
 
   // ════════════════════════════════════════════════════════
