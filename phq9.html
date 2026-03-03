@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PHQ-9 · Шкала оцінки депресії</title>
+  <link rel="stylesheet" href="shared/style.css">
+</head>
+<body>
+
+  <div id="introScreen"></div>
+  <div id="quizScreen" class="hidden"></div>
+  <div id="thankYouScreen" class="hidden"></div>
+
+  <script>
+  const FORM_CONFIG = {
+    questionnaire:    'PHQ-9',
+    scriptUrl:        'https://script.google.com/macros/s/AKfycbyOw1TE9cPFTg0Pq68F_hiAFGeIKjaXIsIICRu8ZotL7pbSqpJy68tbZ9xQRmxgyw6w/exec',
+    psychologistName: 'Психолог Ольга Луспеник',
+    title:            'PHQ-9 · Шкала оцінки депресії',
+
+    instruction: `Будь ласка, вкажіть, як часто вас турбували наведені нижче проблеми
+                  <b>протягом останніх 2 тижнів.</b>`,
+
+    scale: {
+      values:      [0, 1, 2, 3],
+      labels:      ['Жодного разу', 'Кілька днів', 'Більше половини днів', 'Майже щодня'],
+      legendLeft:  '0 — жодного разу',
+      legendRight: '3 — майже щодня',
+    },
+
+    // PHQ-9 — один блок з 9 питань
+    blocks: [
+      {
+        tag:   'PHQ-9',
+        title: 'Як часто вас турбували такі проблеми?',
+        questions: [
+          { n: 1, t: 'Відсутність інтересу або задоволення від діяльності' },
+          { n: 2, t: 'Пригніченість, депресія або відчуття безнадійності' },
+          { n: 3, t: 'Труднощі з засинанням або надмірний сон' },
+          { n: 4, t: 'Відчуття втоми або браку енергії' },
+          { n: 5, t: 'Відсутність апетиту або переїдання' },
+          { n: 6, t: 'Відчуття власної нікчемності або надмірна провина' },
+          { n: 7, t: 'Труднощі з концентрацією уваги' },
+          { n: 8, t: 'Сповільненість рухів або мовлення, або навпаки — надмірне збудження' },
+          { n: 9, t: 'Думки про те, що краще б вас не було, або думки про заподіяння собі шкоди' },
+        ]
+      }
+    ]
+  };
+  </script>
+
+  <script src="shared/form.js"></script>
+</body>
+</html>
