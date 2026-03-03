@@ -246,19 +246,28 @@
     document.getElementById('quizScreen').classList.add('hidden');
     document.getElementById('thankYouScreen').classList.remove('hidden');
 
-    // Надсилаємо дані через POST (GET обрізає довгі URL)
+    // Надсилаємо через прихований iframe + form
+    // (єдиний надійний спосіб з GitHub Pages на Apps Script)
     const jsonStr = JSON.stringify(payload);
 
-    // Спосіб 1 — fetch POST
-    fetch(FORM_CONFIG.scriptUrl, {
-      method:  'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body:    jsonStr,
-    }).catch(function() {
-      // Спосіб 2 — GET через img (резервний для коротких даних)
-      const img = new Image();
-      img.src = FORM_CONFIG.scriptUrl + '?data=' + encodeURIComponent(jsonStr);
-    });
+    const iframe = document.createElement('iframe');
+    iframe.name  = 'hidden_iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = FORM_CONFIG.scriptUrl;
+    form.target = 'hidden_iframe';
+
+    const input = document.createElement('input');
+    input.type  = 'hidden';
+    input.name  = 'data';
+    input.value = jsonStr;
+
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
   }
 
   // ════════════════════════════════════════════════════════
